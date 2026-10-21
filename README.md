@@ -1,3 +1,5 @@
 # SPERM-Tracking
 
 This code tries to cluster data into groups using HDBSCAN and UMAP. I tried to get clusters like in WHO: Rapidly Progressive (RP), Slowly Progressive (SP), Non-Progressive (NP) and Immotile (IM). Of course, there were several problems with that, because firstly I and my colleague wanted to use fixed thresholds, but then we learnt that using the same data for getting these thresholds would make bias for particular videos. For example, we used all tracks and knew average percent of each cluster in all videos, then we got thresholds to get these percent in our data, then used the same thresholds for each video. It was a mistake, because we used the same data to learn what thresholds we should use.
+
+There is an another way to cluster all this data: use the exact thresholds of speed and linearity of the track.
