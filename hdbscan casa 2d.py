@@ -13,15 +13,14 @@ INPUT_DIR    = r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\CASA METRICS\
 FILE_PATTERN = "*.xlsx"
 OUTPUT_DIR   = r"D:\Lab\20 videos\Without grid\UNDERSTANDING\HDBSCAN CASA 2 PARAMETERS\PURE\VAP STR, EOM MCS 0.03, MS 10, IM MERGE LARGEST SLOW + NOISE P95, A PROB 0.5, C Cluster"
 
-X_COL = 'CASA_VAP'   # ось «скорость»
-Y_COL = 'CASA_STR'   # ось «прямолинейность»
-Z_COL = None         # третий признак для HDBSCAN, например 'CASA_LIN' или 'CASA_ALH_mean'; None — только два.
-                     # IM и A по-прежнему определяются по X_COL и Y_COL, графики — тоже X×Y.
+X_COL = 'CASA_VAP'   
+Y_COL = 'CASA_STR'  
+Z_COL = None         
 
-MODE = 'per_video'   # 'per_video' — каждое видео отдельно; 'pooled' — все треки всех видео вместе
+MODE = 'per_video'  
 
-SCALER   = 'standard'   # 'standard' | 'robust' | 'yeo-johnson'
-WEIGHT_X = 1.0           # вес признака после стандартизации
+SCALER   = 'standard'  
+WEIGHT_X = 1.0           
 WEIGHT_Y = 1.0
 WEIGHT_Z = 1.0
 IM_FROM_2D = True
