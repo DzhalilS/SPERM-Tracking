@@ -8,9 +8,6 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, RobustScaler, PowerTransformer
 import hdbscan
 
-# =============================================================================
-# ▶ НАСТРОЙКИ
-# =============================================================================
 
 INPUT_DIR    = r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\CASA METRICS\link_g 30, link_sp_diff 0.85, link_m_d 100, thresh 160, col_dist 30, min_dur 20\CASA TRACKS v2"
 FILE_PATTERN = "*.xlsx"
@@ -27,9 +24,6 @@ SCALER   = 'standard'   # 'standard' | 'robust' | 'yeo-johnson'
 WEIGHT_X = 1.0           # вес признака после стандартизации
 WEIGHT_Y = 1.0
 WEIGHT_Z = 1.0
-# IM_FROM_2D — только при Z_COL: неподвижные (IM) берутся из отдельного прогона HDBSCAN на X_COL + Y_COL,
-# а третий признак используется только для остальных кластеров (A и др.). У неподвижных третий признак
-# (LIN, STR) случаен и размывает их кластер, а для них важна только скорость.
 IM_FROM_2D = True
 
 HDBSCAN_PARAMS = dict(
@@ -40,42 +34,28 @@ HDBSCAN_PARAMS = dict(
     metric='euclidean',
 )
 
-# IM_MERGE: опорный кластер (IM_REF) = неподвижные (IM). Граница = 95-й перцентиль его скорости.
-# Другие кластеры с медианой скорости ниже границы сливаются с ним, шумовые треки медленнее границы входят в IM.
+
 IM_MERGE    = True
 IM_QUANTILE = 0.95
-# IM_REF — какой кластер взять за неподвижный:
-#   'slowest'      — самый медленный кластер C1;
-#   'largest_slow' — самый большой из «медленных» кластеров, т.е. с медианой скорости ниже медианы скорости
-#                    всех треков этого видео (без заданных чисел; если таких нет — C1).
+
 IM_REF      = 'largest_slow'
-# IM_LIMIT_BY_A — граница IM не дальше «середины» между IM и A: среднего геометрического медиан скорости
-# кластеров IM и A (берётся из самих кластеров, заданных чисел нет). Треки IM быстрее середины → шум.
+
 IM_LIMIT_BY_A = True
-# A_MODE — добор шума в быстрый кластер A (быстрые прогрессивные). A = самый большой из «быстрых» кластеров,
-# т.е. с медианой скорости выше медианы скорости всех треков видео (если таких нет — самый быстрый кластер).
-#   None       — не добирать (A всё равно выделяется и подписывается);
-#   'prob'     — шум → A, если по вероятностям HDBSCAN он относится к A с долей ≥ A_PROB;
-#   'quantile' — шум → A, если его скорость и прямолинейность не ниже A_QUANTILE-перцентиля (5%) самого A.
+
 A_MODE     = 'prob'
 A_PROB     = 0.5
 A_QUANTILE = 0.05
-# NP — непрогрессивные (класс c): треки вне IM и A, которые не медленнее A (скорость ≥ NP_QUANTILE-перцентиля
-# скорости A), но кривее его (STR < NP_QUANTILE-перцентиля STR A). False — не выделять.
-# A_TRIM — из A убирается его медленная часть: треки медленнее A_TRIM-перцентиля скорости самого A
-# (граница своя в каждом видео) → 'A_slow'. None — не убирать.
+
 A_TRIM      = 0.33
 NP_MODE     = True
 NP_QUANTILE = 0.05
-SOFT_ASSIGN = None   # None — шум остаётся шумом; например 0.5 — шум → самый вероятный кластер, если вероятность ≥ 0.5
+SOFT_ASSIGN = None   
 MIN_TRACKS  = 20
 
 SAVE_PLOTS        = True
 SAVE_TRACK_LABELS = True
 
-# =============================================================================
-# 1. ЗАГРУЗКА
-# =============================================================================
+
 
 def load_videos() -> dict:
     files = sorted(f for f in Path(INPUT_DIR).glob(FILE_PATTERN) if not f.name.startswith('~$'))
@@ -94,9 +74,7 @@ def load_videos() -> dict:
     print(f"Загружено видео: {len(videos)}")
     return videos
 
-# =============================================================================
-# 2. HDBSCAN
-# =============================================================================
+
 
 def standardize(X: np.ndarray) -> np.ndarray:
     scaler = {'standard': StandardScaler(), 'robust': RobustScaler(),
@@ -126,7 +104,7 @@ def cluster(df: pd.DataFrame, use_z: bool = True):
     order = sorted(ids, key=lambda c: df['x'].values[raw == c].mean())
     remap = {old: new for new, old in enumerate(order, start=1)}
     labels = np.array([remap.get(c, -1) for c in raw])
-    # вероятности в той же нумерации, что и метки: prob[:, k] — доля принадлежности к кластеру Ck
+
     prob = None
     if share is not None:
         prob = np.zeros((len(raw), len(ids) + 1))
@@ -135,9 +113,9 @@ def cluster(df: pd.DataFrame, use_z: bool = True):
     return labels, p, prob
 
 
-A = 100   # метка быстрого кластера A
-NP = 102  # метка непрогрессивных (c)
-A_SLOW = 103  # медленная часть A (A_TRIM)
+A = 100  
+NP = 102 
+A_SLOW = 103  
 
 
 def trim_fast(df: pd.DataFrame, labels: np.ndarray):
@@ -182,10 +160,6 @@ def assign_fast(df: pd.DataFrame, labels: np.ndarray, prob):
         take = np.zeros(len(labels), bool)
     new[(labels == ref) | take] = A
     return new
-
-# =============================================================================
-# 3. СТАТИСТИКА
-# =============================================================================
 
 def merge_immotile(df: pd.DataFrame, labels: np.ndarray):
     """C1 + кластеры с медианой скорости ниже 95-го перцентиля C1 + шум медленнее этой границы → IM (метка 0)."""
@@ -233,9 +207,6 @@ def summarize(video: str, df: pd.DataFrame, labels: np.ndarray, params: dict):
                      f'{Y_COL}_q90': round(np.quantile(lf, 0.9), 3)})
     return wide, long
 
-# =============================================================================
-# 4. ГРАФИК
-# =============================================================================
 
 def plot(video: str, df: pd.DataFrame, labels: np.ndarray, out_dir: Path):
     fig, ax = plt.subplots(figsize=(7, 6))
@@ -266,9 +237,6 @@ def plot(video: str, df: pd.DataFrame, labels: np.ndarray, out_dir: Path):
     fig.savefig(out_dir / f'{safe}_scatter.png', dpi=150)
     plt.close(fig)
 
-# =============================================================================
-# 5. MAIN
-# =============================================================================
 
 def main():
     out_dir = Path(OUTPUT_DIR)
@@ -299,8 +267,8 @@ def main():
                 lab2, _, prob2 = cluster(d, use_z=False)
                 lab2, cut = merge_immotile(d, assign_fast(d, lab2, prob2))
                 im2 = lab2 == 0
-                lab[(lab == 0) & ~im2] = -1          # не неподвижные по 2D-прогону → шум
-                lab[im2 & (lab != A)] = 0            # неподвижные по 2D-прогону → IM
+                lab[(lab == 0) & ~im2] = -1       
+                lab[im2 & (lab != A)] = 0        
             lab = assign_np(d, lab)
             lab, a_cut = trim_fast(d, lab)
             results[v] = (lab, {**params, 'im_cut': cut, 'a_cut': a_cut})
