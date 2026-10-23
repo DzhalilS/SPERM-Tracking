@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 # ==============================================================================
-#  НАСТРОЙКИ
+#  SETTINGS
 # ==============================================================================
 INPUT_DIR = r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\THIRD TERTILE 11 9 7 3 17 16 19.xlsx"
 OUTPUT_PATH = r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\THIRD TERTILE (p) 11 9 7 3 17 16 19.xlsx"
@@ -17,22 +17,21 @@ COL_STD = 'TRACK_STD_SPEED'
 
 FEATURES = [COL_SPEED, COL_LFP, COL_STD]
 
-# ПОРОГИ ВОЗ 2021
 SPEED_IMMOTILE = 3.525
 SPEED_PROGRESSIVE = 7.245
 LFP_PROGRESSIVE = 0.122
 
 # Цвета категорий
 COLORS = {
-    'RP': '#2ecc71',  # зелёный  — прогрессивная
-    'SP': '#3498db',  # синий    — непрогрессивная быстрая
-    'NP': '#e67e22',  # оранжевый — непрогрессивная медленная
-    'IM': '#e74c3c',  # красный  — неподвижная
+    'RP': '#2ecc71',  # green
+    'SP': '#3498db',  # blue
+    'NP': '#e67e22',  # orange
+    'IM': '#e74c3c',  # red
 }
 
 
 # ==============================================================================
-#  ФУНКЦИИ
+#  FUNCTIONS
 # ==============================================================================
 
 def force_numeric(df: pd.DataFrame, cols: list) -> pd.DataFrame:
@@ -49,10 +48,10 @@ def force_numeric(df: pd.DataFrame, cols: list) -> pd.DataFrame:
 def classify_who(df: pd.DataFrame) -> pd.DataFrame:
     """Классификация по ВОЗ 2021."""
     conds = [
-        (df[COL_SPEED] < SPEED_IMMOTILE),                                              # D — неподвижные
-        (df[COL_LFP] < LFP_PROGRESSIVE),                                               # C — непрогрессивные (медленные)
-        (df[COL_SPEED] < SPEED_PROGRESSIVE),                                           # B — непрогрессивные (быстрые)
-        (df[COL_SPEED] >= SPEED_PROGRESSIVE) & (df[COL_LFP] >= LFP_PROGRESSIVE),      # A — прогрессивные
+        (df[COL_SPEED] < SPEED_IMMOTILE),                                            
+        (df[COL_LFP] < LFP_PROGRESSIVE),                                              
+        (df[COL_SPEED] < SPEED_PROGRESSIVE),                                          
+        (df[COL_SPEED] >= SPEED_PROGRESSIVE) & (df[COL_LFP] >= LFP_PROGRESSIVE),      
     ]
     choices = ['IM', 'NP', 'SP', 'RP']
     df['WHO_CATEGORY'] = np.select(conds, choices, default='Unknown')
@@ -65,10 +64,10 @@ def print_percentages(df: pd.DataFrame) -> None:
     counts = df['WHO_CATEGORY'].value_counts().reindex(['RP', 'SP', 'NP', 'IM'], fill_value=0)
 
     labels = {
-        'RP': 'Прогрессивная (RP)',
-        'SP': 'Непрогрессивная быстрая (SP)',
-        'NP': 'Непрогрессивная медленная (NP)',
-        'IM': 'Неподвижная (IM)',
+        'RP': 'RAPIDLY PROGRESSIVE (RP)',
+        'SP': 'SLOWLY PROGRESSIVE (SP)',
+        'NP': 'NONPROGRESSIVE (NP)',
+        'IM': 'IMMOTILE (IM)',
     }
 
     print("\n" + "=" * 45)
@@ -82,15 +81,12 @@ def print_percentages(df: pd.DataFrame) -> None:
 
 x_max=10
 
-
 def plot_2d_scatter(df: pd.DataFrame) -> None:
     """Оптимизированный 2D scatter-plot для научного постера."""
-    # Увеличиваем размер графика, чтобы на постере всё было крупно
     fig, ax = plt.subplots(figsize=(10, 8))
 
     total = len(df)
 
-    # 1. Рисуем точки (в легенду пойдут ТОЛЬКО категории и их %/n)
     for cat in ['RP', 'SP', 'NP', 'IM']:
         mask = df['WHO_CATEGORY'] == cat
         subset = df[mask]
@@ -182,15 +178,5 @@ if __name__ == '__main__':
     cols.insert(1, 'WHO_CATEGORY')
     df_all = df_all[cols]
 
-    # --- СОХРАНЕНИЕ ---
-    '''Path(OUTPUT_PATH).parent.mkdir(parents=True, exist_ok=True)
-    with pd.ExcelWriter(OUTPUT_PATH, engine='openpyxl') as writer:
-        df_all.to_excel(writer, sheet_name='All_Tracks', index=False)'''
-
-    #print(f"✅ Файл сохранен: {OUTPUT_PATH}")
-
-    # --- ПРОЦЕНТЫ ---
     print_percentages(df_all)
-
-    # --- ВИЗУАЛИЗАЦИЯ 2D ---
     plot_2d_scatter(df_all)
