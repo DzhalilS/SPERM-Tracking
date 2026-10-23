@@ -15,12 +15,12 @@ Manual assessment depends on a trained technician, who has to remember which cel
 ```
 video  ->  Fiji / TrackMate  ->  spots + tracks tables (.xlsx)
                                          |
-                    1. filtering   (super filtration with excel 10 files.py)
+                    1. filtering   (FILTRATION OF TRACKMATE TRACKS.py)
                                          |
               +--------------------------+--------------------------+
               |                                                     |
  2a. threshold baseline                                2b. HDBSCAN clustering
- (MANUAL CLUSTERISATION MAIN.py)                       (SPERM Clasterization.py,
+ (MANUAL CLUSTERIZATION MAIN.py)                       (SPERM CLUSTERIZATION NO CASA.py,
                                                         hdbscan casa 2d.py)
               |                                                     |
               +------------------ compare with manual count --------+
