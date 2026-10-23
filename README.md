@@ -34,7 +34,7 @@ video  ->  Fiji / TrackMate  ->  spots + tracks tables (.xlsx)
 | `HDBSCAN CASA 2D.py` | Newer variant that clusters CASA-style metrics (`CASA_VAP`, `CASA_STR`, optionally a third one) in two dimensions and merges the immotile clusters. Writes `tracks_labeled.xlsx`, `summary_all_videos.xlsx` and a scatter plot per video. |
 | `Macros for spots.xlsm`, `Macros for tracks.xlsm` | Excel macros for processing the exported TrackMate spot and track tables. |
 
-### Features used by `SPERM Clasterization.py`
+### Features used by `SPERM CLUSTERIZATION.py`
 
 All come from the TrackMate track table:
 
@@ -69,4 +69,4 @@ On 20 fresh ejaculate samples (video, tertiles by sperm concentration) the clust
 
 ## Authors and supervision
 
-Dzhalil Salimov (Lomonosov Moscow State University, Faculty of Biotechnology). Supervisors: Oleg Sergeyev (Skoltech) and Igor Kireev.
+Dzhalil Salimov (Lomonosov Moscow State University, Faculty of Biotechnology). The track filtering, in particular cutting tracks at the image border and swapping collisions, was developed together with Timur Mamaev. Supervisors: Oleg Sergeyev (Skoltech) and Igor Kireev.
