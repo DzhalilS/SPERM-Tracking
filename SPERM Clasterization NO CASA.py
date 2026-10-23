@@ -16,11 +16,8 @@ from pathlib import Path
 # ▶ НАСТРОЙКИ
 # =============================================================================
 
-FILE_LIST = [r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\15v link_g 30, link_sp_diff 0.85, link_m_d 100, thresh 160, col_dist 30, min_dur 20.xlsx",
-    #r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\FIRST TERTILE 5 8 2 15 10 1 6.xlsx",
-    #r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\SECOND TERTILE 14 18 4 13 20 12.xlsx",
-    #r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\THIRD TERTILE 11 9 7 3 17 16 19.xlsx"
-] #импорт файлов с данными
+FILE_LIST = [r"D:\Lab\20 videos\Without grid\CONCATENATED TABLES\15v link_g 30, link_sp_diff 0.85, link_m_d 100, thresh 160, col_dist 30, min_dur 20.xlsx"
+                ]
 
 # ── HDBSCAN ───────────────────────────────────────────────────────────────────
 MCS_FACTOR  = 0.5
