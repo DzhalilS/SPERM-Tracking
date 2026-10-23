@@ -1,9 +1,0 @@
-numpy
-pandas
-scipy
-scikit-learn
-matplotlib
-openpyxl
-networkx
-hdbscan
-umap-learn
