@@ -1,3 +1,4 @@
+# this code was developed by Dzhalil Salimov and Mamaev Timur (parts of cutting near boarders and swap collisions)
 import numpy as np
 import pandas as pd
 import networkx as nx
